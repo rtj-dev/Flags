@@ -6,7 +6,7 @@
 ## 1. Setup and Approach
 
 ### 1.1 Hybrid Attack Setup
-To meet the penetration test requirement of using a specific source IP, I set up a hybrid attack infrastructure leveraging a Debian-based AWS EC2 instance (t3.small) and a local attack box running **Exegol**. I went with this approach to ensure I can maintain persistent access to the target, as my home IP is subject to change. 
+To meet the penetration test requirement of using a specific source IP, I set up a hybrid attack infrastructure leveraging a Debian-based AWS EC2 instance (t3.small) and a local attack box running **Exegol**. I went with this approach to ensure I can maintain persistent access to the target, as my home IP is dynamic.
 
 - **AWS EC2 Instance (t3.small, Debian)**:
   - **Purpose**: Hosts lightweight tools (`nmap`, `curl`, `ftp`) and serves as a SOCKS5 proxy for heavier workloads.
