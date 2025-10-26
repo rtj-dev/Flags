@@ -292,9 +292,9 @@ cat /home/Magaluf2012/Flag_2
 
 ### 4.4 Closing Thoughts
 
-I'm aware this route was may not be the intended path, but in a real-world environment, a writable `/etc/passwd` would be a critical, high-priority misconfiguration that gives direct root access, so it made sense to exploit it.
+I'm aware this route may not have been the intended path., but in a real-world environment, a writable `/etc/passwd` would be a critical, high-priority misconfiguration that gives direct root access, so it made sense to exploit it.
 
-After gaining root via the `/etc/passwd` misconfiguration, I checked the system’s command history, which there was an attempt to cover tracks using `clear history` or `history clear`, which doesn’t actually remove the shell history. (For reference, the correct way would be `history -c && history -w`.)
+After gaining root via the `/etc/passwd` misconfiguration, I checked the system’s command history, there was an attempt to cover tracks using clear history or history clear, which don’t actually clear the command history. (For reference, the correct way would be `history -c && history -w`.)
 
 While the `snap-confine` binary with dangerous capabilities (`cap_sys_admin`, `cap_dac_override`, etc.) initially looked like a potential escalation vector, it seems more likely that its configuration was either default or unintentional, I didn’t find a clean escalation path involving Snap or the second user account (`Magaluf2012`).
 
