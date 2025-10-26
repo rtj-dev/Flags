@@ -193,7 +193,7 @@ Uploading a `<script>alert(document.domain)</script>` confirms it can render js,
   Immediate findings are .git and .ssh, .ssh containing a public and private key, id_ed25519, id_ed25519.pub, with the .pub containing a username, BillyTheKid.
 
 - **Notes**: I found nothing remarkable when looking through the underlying logic in .js or any secrets in .cfg files. /build/ gives us a direct render of the site, `gulp_tasks/config/paths.js`does not reference `/screenshots/uploads` at all.
-The .pub file 
+
 
 ### 3.3 SMTP
 - **Notes**: Trying various different nmap scans `-sT -sX` etc and various timeout intervals yield no results, it's a hard filtered port, likely accessible locally from a web/reverse shell.
@@ -225,8 +225,38 @@ The .pub file
   1 of 3 Billy The Kid Flag : fdoQ#9G#%R6yo_JL
   ```
 
+### 4.1 Enumeration as BillyTheKid
+    
+  - **/etc/shadow**:  
+    ```
+    uid=0(root) gid=0(root) groups=0(root)
+    uid=1000(ubuntu) gid=1000(ubuntu) groups=1000(ubuntu),4(adm),24(cdrom),27(sudo),30(dip),105(lxd)
+    uid=1001(BillyTheKid) gid=1001(BillyTheKid) groups=1001(BillyTheKid),100(users)
+    uid=1002(Magaluf2012) gid=1002(Magaluf2012) groups=1002(Magaluf2012),100(users)
+    ```
+      Magaluf2012, uid 1002, another user and potential target.
 
-
-
-
-
+- **Bash History**:  
+     ```
+		 su root BillyTheKid1994
+		 history
+		 cd
+		 ssh-keygen -t ed25519
+		 sudo ssh-keygen -t ed25519
+		history
+		 su root BillyTheKid1994
+		 history
+		 adduser Maggers!
+		 history
+		apt install vsftpd
+		 I'm a Ninja!
+		 Super Ninja!
+		 history
+		 sudo -l
+		 su root
+		 ls
+		 cat Message_from_your_friendly_neighbourhood_root
+		 history
+		 su Magaluf2012
+		 ```
+		 
