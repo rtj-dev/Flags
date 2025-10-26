@@ -1,4 +1,4 @@
-# Penetration Test Documentation: Initial Enumeration
+# Penetration Test Documentation
 
 **Date**: October 25, 2025  
 **Target**: 13.40.110.252 (ec2-13-40-110-252.eu-west-2.compute.amazonaws.com)
