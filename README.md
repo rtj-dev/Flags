@@ -200,9 +200,6 @@ Uploading a `<script>alert(document.domain)</script>` confirms it can render js,
 ### 3.3 SMTP
 - **Notes**: Trying various different nmap scans `-sT -sX` etc and various timeout intervals yield no results, it's a hard filtered port, likely accessible locally from a web/reverse shell.
 
-
-Sure — here's the revised section of your report, keeping your tone but including the points we discussed:
-
 ----------
 
 ## 4. Privilege Escalation
